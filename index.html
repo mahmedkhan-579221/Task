@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>STEAM-EDU Task Assignment System</title>
+    <style>
+        :root {
+            --gray: #7a7d7d;
+            --white: #ffffff;
+            --navy: #1a144c;
+            --teal: #01b7c5;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: var(--gray);
+            color: var(--navy);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+            padding: 25px;
+        }
+
+        h1 {
+            text-align: center;
+            color: var(--navy);
+            margin-bottom: 30px;
+            font-size: 28px;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .filter-group h3 {
+            margin-bottom: 10px;
+            color: var(--navy);
+            font-size: 20px;
+        }
+
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .filter-btn {
+            padding: 10px 18px;
+            background-color: var(--teal);
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, transform 0.2s;
+            font-size: 14px;
+        }
+
+        .filter-btn:hover {
+            background-color: #0196a0;
+            transform: scale(1.05);
+        }
+
+        .filter-btn.active {
+            background-color: var(--navy);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            overflow-x: auto;
+        }
+
+        th,
+        td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            font-size: 15px;
+        }
+
+        th {
+            background-color: #f1f1f1;
+            color: var(--navy);
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .status-completed {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .status-pending {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .status-overdue {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .no-tasks {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray);
+            font-style: italic;
+        }
+
+        @media screen and (max-width: 768px) {
+
+            table,
+            thead,
+            tbody,
+            th,
+            td,
+            tr {
+                display: block;
+            }
+
+            thead {
+                display: none;
+            }
+
+            tr {
+                margin-bottom: 20px;
+                background-color: #fff;
+                box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+                padding: 10px;
+                border-radius: 8px;
+            }
+
+            td {
+                display: flex;
+                justify-content: space-between;
+                padding: 10px;
+                border: none;
+                border-bottom: 1px solid #eee;
+            }
+
+            td::before {
+                content: attr(data-label);
+                font-weight: bold;
+                color: var(--navy);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>STEAM-EDU Tasks</h1>
+
+        <div class="filter-group">
+            <h3>Filter by Member</h3>
+            <div class="filters" id="member-filters">
+                <button class="filter-btn active" data-member="all">All Members</button>
+                <button class="filter-btn" data-member="ahmed">M Ahmed</button>
+                <button class="filter-btn" data-member="areeba">Areeba</button>
+                <button class="filter-btn" data-member="awais">Awais</button>
+                <button class="filter-btn" data-member="unzaib">Unzaib</button>
+                <button class="filter-btn" data-member="zeeshan">Zeeshan</button>
+                <button class="filter-btn" data-member="rimsha">Rimsha</button>
+                <button class="filter-btn" data-member="qasim">Qasim</button>
+            </div>
+        </div>
+
+        <div class="filter-group">
+            <h3>Filter by Status</h3>
+            <div class="filters" id="status-filters">
+                <button class="filter-btn active" data-status="all">All Status</button>
+                <button class="filter-btn" data-status="pending">Pending</button>
+                <button class="filter-btn" data-status="completed">Completed</button>
+                <button class="filter-btn" data-status="overdue">Overdue</button>
+            </div>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Member</th>
+                    <th>Task Title</th>
+                    <th>Description</th>
+                    <th>Assigning Date</th>
+                    <th>Due Date</th>
+                    <th>Status</th>
+                    <th>Remarks</th>
+                </tr>
+            </thead>
+            <tbody id="tasks-body"></tbody>
+        </table>
+    </div>
+
+    <script>
+        const tasks = [
+            { member: "ahmed", memberName: "M Ahmed", title: "AI Book", description: "Create a modern design", assignDate: "4-July-2025", dueDate: "30-Aug-2025", status: "pending", remarks: "-" },
+            { member: "ahmed", memberName: "M Ahmed", title: "Task_Management Softwar", description: "Development Task Managment System softwar without database", assignDate: "14-July-2025", dueDate: "16-July-2025", status: "completed", remarks: "-" },
+            { member: "ahmed", memberName: "M Ahmed", title: "Task_Management Softwar", description: "Development Task Managment System softwar with database to a live", assignDate: "30-July-2025", dueDate: "16-July-2025", status: "pending", remarks: "-" },
+            { member: "ahmed", memberName: "M Ahmed", title: "IAK-STEAM web", description: "Leadership (Uzaib + Zeeshan)", assignDate: "10-July-2025", dueDate: "25-July-2025", status: "pending", remarks: "-" },
+            { member: "ahmed", memberName: "M Ahmed", title: "IAK website", description: "Leadership (Awais)", assignDate: "10-July-2025", dueDate: "25-July-2025", status: "pending", remarks: "-" },
+            { member: "areeba", memberName: "Areeba", title: "Complete the front-end development course", description: "complete the front-end development", assignDate: "3-july-2025", dueDate: "25-july-2025", status: "pending", remarks: "-" },
+            { member: "awais", memberName: "Awais", title: "Complete the front-end development course", description: "complete the front-end development", assignDate: "3-july-2025", dueDate: "25-july-2025", status: "pending", remarks: "-" },
+            { member: "awais", memberName: "Awais", title: "Develop the IAK Website", description: "complete the front-end only", assignDate: "16-july-2025", dueDate: "26-july-2025", status: "pending", remarks: "-" },
+            { member: "awais", memberName: "Awais", title: "Head sir Documentry", description: "creating head sir documentry by using AI tools", assignDate: "3-july-2025", dueDate: "25-july-2025", status: "pending", remarks: "-" },
+            { member: "unzaib", memberName: "Unzaib", title: "Complete the front-end development course", description: "complete the front-end development", assignDate: "3-july-2025", dueDate: "25-July-2025", status: "pending", remarks: "-" },
+            { member: "unzaib", memberName: "Unzaib", title: "Develop the IAK-STEAM Web", description: "develop the web by using html, css & js only", assignDate: "16-july-2025", dueDate: "25-july-2025", status: "pending", remarks: "-" },
+            { member: "zeeshan", memberName: "Zeeshan", title: "Complete the front-end development course", description: "complete the front-end development", assignDate: "3-july-2025", dueDate: "25-July-2025", status: "pending", remarks: "-" },
+            { member: "zeeshan", memberName: "Zeeshan", title: "Develop the IAK-STEAM Web", description: "develop the web by using html, css & js only", assignDate: "16-july-2025", dueDate: "25-july-2025", status: "pending", remarks: "-" },
+            { member: "rimsha", memberName: "Rimsha", title: "Robotics Arduino", description: "Complete all video lessons", assignDate: "28-June-2025", dueDate: "12-july-2025", status: "overdue", remarks: "-" },
+            { member: "qasim", memberName: "Qasim", title: "Robotics Arduino", description: "Complete all video lessons", assignDate: "28-June-2025", dueDate: "12-july-2025", status: "overdue", remarks: "-" }
+        ];
+
+        const tasksBody = document.getElementById('tasks-body');
+        const memberButtons = document.querySelectorAll('#member-filters .filter-btn');
+        const statusButtons = document.querySelectorAll('#status-filters .filter-btn');
+
+        let currentMember = 'all';
+        let currentStatus = 'all';
+
+        function renderTasks() {
+            tasksBody.innerHTML = '';
+
+            const filteredTasks = tasks.filter(task => {
+                const matchMember = currentMember === 'all' || task.member === currentMember;
+                const matchStatus = currentStatus === 'all' || task.status === currentStatus;
+                return matchMember && matchStatus;
+            });
+
+            if (filteredTasks.length === 0) {
+                tasksBody.innerHTML = `<tr><td colspan="7" class="no-tasks">No tasks found with selected filters.</td></tr>`;
+                return;
+            }
+
+            filteredTasks.forEach(task => {
+                const row = document.createElement('tr');
+                const statusClass = `status-${task.status}`;
+                row.innerHTML = `
+          <td data-label="Member">${task.memberName}</td>
+          <td data-label="Task Title">${task.title}</td>
+          <td data-label="Description">${task.description}</td>
+          <td data-label="Assigning Date">${task.assignDate}</td>
+          <td data-label="Due Date">${task.dueDate}</td>
+          <td data-label="Status" class="${statusClass}">${task.status.charAt(0).toUpperCase() + task.status.slice(1)}</td>
+          <td data-label="Remarks">${task.remarks}</td>
+        `;
+                tasksBody.appendChild(row);
+            });
+        }
+
+        memberButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                memberButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentMember = btn.getAttribute('data-member');
+                renderTasks();
+            });
+        });
+
+        statusButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                statusButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentStatus = btn.getAttribute('data-status');
+                renderTasks();
+            });
+        });
+
+        renderTasks();
+    </script>
+</body>
+
+</html>
